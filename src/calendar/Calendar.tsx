@@ -1,3 +1,4 @@
+import { getConcatMonthYear } from "../common";
 import Cell from "./Cell"
 import {format, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay, endOfMonth, addYears, subYears, setDate } from "date-fns";
 
@@ -5,9 +6,10 @@ const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 type Props = {
     selectedDate?: Date;
     changeSelectedDate: (date: Date) => void;
+    datesAttended?: Map<string, Array<number>>;
 }
 
-const Calendar: React.FC<Props> = ({selectedDate = new Date(), changeSelectedDate}) => {
+const Calendar: React.FC<Props> = ({selectedDate = new Date(), changeSelectedDate, datesAttended}) => {
     const nextMonth = () => changeSelectedDate(addMonths(selectedDate, 1));
     const prevMonth = () => changeSelectedDate(subMonths(selectedDate, 1));
     const nextYear = () => changeSelectedDate(addYears(selectedDate, 1));
@@ -34,7 +36,9 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), changeSelectedDat
                 {Array.from({length: numOfDays}, ((_, i) => {
                     const dayOfMonth = i + 1;
                     const isSelectedDate = dayOfMonth === selectedDate.getDate();
+                    const isDateAttended = datesAttended?.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
                     return <Cell 
+                        isDateAttended={isDateAttended}
                         isActive={isSelectedDate} 
                         onClick={() => handleClickDate(dayOfMonth)} 
                         key={i}>
