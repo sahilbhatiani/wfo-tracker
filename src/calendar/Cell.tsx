@@ -5,9 +5,10 @@ interface Props extends React.PropsWithChildren {
     onClick?: () => void;
     isActive?: boolean;
     isDateAttended?: boolean;
+    isLeaveDate?: boolean;
 }
 
-const Cell: React.FC<Props> = ({isDateAttended=false, isActive=false, className, children, onClick}) => {
+const Cell: React.FC<Props> = ({isLeaveDate=false, isDateAttended=false, isActive=false, className, children, onClick}) => {
     return(
         <div 
             onClick={isActive ? undefined: onClick} 
@@ -16,6 +17,7 @@ const Cell: React.FC<Props> = ({isDateAttended=false, isActive=false, className,
                 {"cursor-pointer hover:bg-gray-100": !isActive && !isDateAttended && !!onClick}, className,
                 {"bg-blue-600 text-white": !!isActive}, 
                 {"cursor-pointer bg-yellow-500 text-white": !!isDateAttended},
+                {"cursor-pointer bg-gray-500 text-white": isLeaveDate}
                 )
             }>
             {children}

@@ -7,9 +7,10 @@ type Props = {
     selectedDate?: Date;
     changeSelectedDate: (date: Date) => void;
     datesAttended?: Map<string, Array<number>>;
+    leaveDates?:  Map<string, Array<number>>;
 }
 
-const Calendar: React.FC<Props> = ({selectedDate = new Date(), changeSelectedDate, datesAttended}) => {
+const Calendar: React.FC<Props> = ({selectedDate = new Date(), changeSelectedDate, datesAttended, leaveDates}) => {
     const nextMonth = () => changeSelectedDate(addMonths(selectedDate, 1));
     const prevMonth = () => changeSelectedDate(subMonths(selectedDate, 1));
     const nextYear = () => changeSelectedDate(addYears(selectedDate, 1));
@@ -37,7 +38,9 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), changeSelectedDat
                     const dayOfMonth = i + 1;
                     const isSelectedDate = dayOfMonth === selectedDate.getDate();
                     const isDateAttended = datesAttended?.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
+                    const isLeaveDate = leaveDates?.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
                     return <Cell 
+                        isLeaveDate = {isLeaveDate}
                         isDateAttended={isDateAttended}
                         isActive={isSelectedDate} 
                         onClick={() => handleClickDate(dayOfMonth)} 

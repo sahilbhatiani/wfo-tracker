@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import Calendar from './calendar/Calendar'
-import { format, setDate } from 'date-fns';
+import { format } from 'date-fns';
 import { getConcatMonthYear } from './common';
 import Stats from './Stats';
 
@@ -24,6 +24,7 @@ function App() {
   let isSelectedDateAttended = false;
   const [datesAttended, setDatesAttended] = useState(new Map<string, Array<number>>())
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [leaveDates, setLeaveDates] = useState(new Map<string, Array<number>>())
   if(datesAttended.get(getConcatMonthYear(selectedDate))?.includes(selectedDate.getDate())){isSelectedDateAttended = true;}
 
   function handleSetToday(){
@@ -53,6 +54,21 @@ function App() {
   function clearAttendance(){
     const monthYear = getConcatMonthYear(selectedDate);
     setDatesAttended(map => new Map<string, Array<number>>(map.set(monthYear, [])))
+    setLeaveDates(map => new Map<string, Array<number>>(map.set(monthYear, [])))
+  }
+  function handleLeaveDate(){
+    const monthYear = getConcatMonthYear(selectedDate);
+    const dayOfMonth = selectedDate.getDate();
+    let currMonthLeaveDates = leaveDates.get(monthYear);
+    if(!!currMonthLeaveDates){
+      if(!currMonthLeaveDates.includes(dayOfMonth)){
+        currMonthLeaveDates.push(dayOfMonth);
+      }
+    }
+    else{
+      currMonthLeaveDates = [dayOfMonth];
+    }
+    setLeaveDates(map => new Map<string, Array<number>>(map.set(monthYear, currMonthLeaveDates ? currMonthLeaveDates:new Array<number>)));
   }
   return (
     <>
@@ -61,11 +77,12 @@ function App() {
     <div className='flex justify-center space-x-4'>
       <button className="text-sm mb-4 px-4 py-1 rounded text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800" onClick={handleSetToday}>Today</button>
       <AttendanceButton isSelectedDateAttended={isSelectedDateAttended} handleDateAttended={handleDateAttended} handleRemoveDateAttended={handleRemoveDateAttended}/>
-      <button className="text-sm mb-4 px-4 py-1 rounded text-white bg-red-600 hover:bg-red-700 active:bg-red-800" onClick={clearAttendance}>Clear Attendance</button>
+      <button className="text-sm mb-4 px-4 py-1 rounded text-white bg-gray-600 hover:bg-gray-700 active:bg-gray-800" onClick={handleLeaveDate}>On leave</button>
+      <button className="text-sm mb-4 px-4 py-1 rounded text-white bg-red-600 hover:bg-red-700 active:bg-red-800" onClick={clearAttendance}>Clear All</button>
     </div>
     <div className="flex flex-row items-center justify-center gap-20">
-      <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate}/>
-      <Calendar selectedDate={selectedDate} changeSelectedDate={setSelectedDate} datesAttended={datesAttended}/>
+      <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaveDates={leaveDates.get(getConcatMonthYear(selectedDate))}/>
+      <Calendar selectedDate={selectedDate} changeSelectedDate={setSelectedDate} datesAttended={datesAttended} leaveDates={leaveDates}/>
     </div>
     </>
   )
