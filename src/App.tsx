@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import Calendar from './calendar/Calendar'
-import { format, setDate } from 'date-fns';
+import { format } from 'date-fns';
 import { getConcatMonthYear } from './common';
 import Stats from './Stats';
 

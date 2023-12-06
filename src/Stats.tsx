@@ -1,11 +1,12 @@
 import { eachWeekendOfMonth, getDaysInMonth } from "date-fns";
 
 type Props = {
-    currentMonthAttendance: number[];
+    currentMonthAttendance: number[] | undefined;
     selectedDate: Date;
 }
 
 const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate}) => {
+    if(!currentMonthAttendance){currentMonthAttendance = []}
     const numberOfWeekendDays = eachWeekendOfMonth(selectedDate).length;
     const numberOfWorkingDaysInMonth = getDaysInMonth(selectedDate) - numberOfWeekendDays;
     const numberOfDaysAttended = currentMonthAttendance?.length;
