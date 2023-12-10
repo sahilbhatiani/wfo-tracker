@@ -75,7 +75,7 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
                     const dayOfMonth = i + 1;
                     const isDateAttended = datesAttended?.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
                     const isLeaveDate = leaveDates.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
-                    const isDayOfMonthToday = new Date().getDate() === dayOfMonth;
+                    const isDayOfMonthToday = format(new Date(), 'd MMM y') === format(setDate(selectedDate, dayOfMonth), 'd MMM y');
                     return <Cell 
                         isDateAttended={isDateAttended}
                         isWeekend = {isWeekend(setDate(selectedDate, dayOfMonth))}
