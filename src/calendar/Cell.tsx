@@ -3,19 +3,20 @@ import clsx from 'clsx';
 interface Props extends React.PropsWithChildren {
     className?: string;
     onClick?: () => void;
-    isActive?: boolean;
+    isWeekend?: boolean;
     isDateAttended?: boolean;
 }
 
-const Cell: React.FC<Props> = ({isDateAttended=false, isActive=false, className, children, onClick}) => {
+const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className, children, onClick}) => {
     return(
         <div 
-            onClick={isActive ? undefined: onClick} 
+            onClick={isWeekend ? undefined : onClick} 
             className={clsx(
-                "h-12 flex items-center justify-center border-b border-r transition-colors",
-                {"cursor-pointer hover:bg-gray-100": !isActive && !isDateAttended && !!onClick}, className,
-                {"bg-blue-600 text-white": !!isActive}, 
-                {"cursor-pointer bg-yellow-500 text-white": !!isDateAttended},
+                "h-12 flex items-center justify-center border-stone-300 transition-colors",
+                {"cursor-pointer hover:bg-gray-100": !isWeekend && !isDateAttended}, className,
+                {"cursor-pointer bg-cyan-400 text-white": !isWeekend && isDateAttended},
+                {"bg-gray-200": isWeekend},
+                "h-full border text-xl"
                 )
             }>
             {children}

@@ -15,13 +15,22 @@ const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate}) => {
     const requredDaysToCome = requiredAttendanceNumber - numberOfDaysAttended;
     return(
         <>
-            <div className='border-2 border-black'>
-                <p>{`Number of Days attended: ${numberOfDaysAttended}`}</p>
-                <p>{`Total Number of working days in month: ${numberOfWorkingDaysInMonth}`}</p>
-                <p>{`Current Attendance %: ${currentAttendancePercentage}`}</p>
-                <p>{`Required Attendance is 50%`}</p>
-                <p>{`Required number of days to come: ${requiredAttendanceNumber}`}</p>
-                <p>{`${requredDaysToCome} more days to come in to meet 50%`}</p>
+            <div className="w-50 stats stats-vertical shadow">
+                <div className="stat">
+                    <div className="stat-title">DAYS IN</div>
+                    <div className="stat-value">{numberOfDaysAttended}</div>
+                    <div className="stat-desc">{`Target: ${requiredAttendanceNumber}`}</div>
+                </div>
+                <div className="stat">
+                    <div className="stat-title">% IN</div>
+                    <div className="stat-value">{`${currentAttendancePercentage.toFixed(1)}%`}</div>
+                    <div className="stat-desc">{`Target: 50%`}</div>
+                </div>
+                <div className="stat">
+                    <div className="stat-title">Leave + Holiday</div>
+                    <div className="stat-value">{`${currentAttendancePercentage.toFixed(1)}%`}</div>
+                    <div className="stat-desc">{`Target: 50%`}</div>
+                </div>
             </div>
         </>
     )
