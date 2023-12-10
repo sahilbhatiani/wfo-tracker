@@ -8,10 +8,11 @@ type Props = {
     setSelectedDate: (date: Date) => void;
     datesAttended: Map<string, Array<number>>;
     setDatesAttended: (datesAttended: Map<string, Array<number>>) => void;
-    
+    leaveDates: Map<string, Array<number>>;
+    setLeaveDates: (leaveDates: Map<string, Array<number>>) => void;
 }
 
-const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended}) => {
+const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates}) => {
     const nextMonth = () => setSelectedDate(addMonths(selectedDate, 1));
     const prevMonth = () => setSelectedDate(subMonths(selectedDate, 1));
     const nextYear = () => setSelectedDate(addYears(selectedDate, 1));
@@ -20,24 +21,43 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
     const firstDayOfMonth = getDay(startOfMonth(selectedDate));
     const lastDayOfMonth = getDay(endOfMonth(selectedDate));
 
-    const handleClickDate = (dayOfMonth: number) => {
+    const handleClickDate = (dayOfMonth: number, isRightClick: boolean = false, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const removeDayFromNonRelevantMonth = (dayOfMonth: number) => {
+            if(nonRelevantMonthDates){
+                if(nonRelevantMonthDates.includes(dayOfMonth)){
+                    nonRelevantMonthDates = nonRelevantMonthDates.filter(day => day !== dayOfMonth)
+                }
+            }
+        } 
         setSelectedDate(setDate(selectedDate, dayOfMonth));
         const monthYear = getConcatMonthYear(selectedDate);
-        let currMonthAttendedDates = datesAttended.get(monthYear);
-        if(!!currMonthAttendedDates){
-          if(!currMonthAttendedDates.includes(dayOfMonth)){
-            currMonthAttendedDates.push(dayOfMonth);
+        let relevantMonthDates = isRightClick ? leaveDates.get(monthYear) : datesAttended.get(monthYear)
+        let nonRelevantMonthDates = isRightClick ? datesAttended.get(monthYear) : leaveDates.get(monthYear);
+        if(isRightClick) event.preventDefault();
+
+        if(relevantMonthDates){
+          if(!relevantMonthDates.includes(dayOfMonth)){
+            relevantMonthDates.push(dayOfMonth);
+            removeDayFromNonRelevantMonth(dayOfMonth)
           }
           else{
-            currMonthAttendedDates = currMonthAttendedDates.filter(day => day !== dayOfMonth);
+            relevantMonthDates = relevantMonthDates.filter(day => day !== dayOfMonth);
         }
         }
         else{
-          currMonthAttendedDates = [dayOfMonth];
+          relevantMonthDates = [dayOfMonth];
+          removeDayFromNonRelevantMonth(dayOfMonth)
         }
-        setDatesAttended(new Map<string, Array<number>>(datesAttended.set(monthYear, currMonthAttendedDates ? currMonthAttendedDates:new Array<number>)));
+        if(isRightClick){
+            setLeaveDates(new Map<string, Array<number>>(leaveDates.set(monthYear, relevantMonthDates ? relevantMonthDates:new Array<number>)));
+            setDatesAttended(new Map<string, Array<number>>(datesAttended.set(monthYear, nonRelevantMonthDates ? nonRelevantMonthDates:new Array<number>)));
+        }
+        else{
+            setDatesAttended(new Map<string, Array<number>>(datesAttended.set(monthYear, relevantMonthDates ? relevantMonthDates:new Array<number>)));
+            setLeaveDates(new Map<string, Array<number>>(leaveDates.set(monthYear, nonRelevantMonthDates ? nonRelevantMonthDates:new Array<number>)));
+        }
     }
-    
+
     return (
         <>
 
@@ -54,12 +74,15 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
                 {Array.from({length: numOfDays}, ((_, i) => {
                     const dayOfMonth = i + 1;
                     const isDateAttended = datesAttended?.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
-                    console.log(`${selectedDate} : ${isWeekend(selectedDate)}`)
+                    const isLeaveDate = leaveDates.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
                     return <Cell 
                         isDateAttended={isDateAttended}
                         isWeekend = {isWeekend(setDate(selectedDate, dayOfMonth))}
-                        onClick={() => handleClickDate(dayOfMonth)} 
-                        key={i}>
+                        isLeaveDate = {isLeaveDate}
+                        onClick={(event) => handleClickDate(dayOfMonth, false, event)} 
+                        key={i}
+                        onContextMenu={(event) => handleClickDate(dayOfMonth, true, event)}
+                        >
                             {dayOfMonth}
                     </Cell>
                 }))}

@@ -3,16 +3,17 @@ import { eachWeekendOfMonth, getDaysInMonth } from "date-fns";
 type Props = {
     currentMonthAttendance: number[] | undefined;
     selectedDate: Date;
+    currentMonthLeaves: number[] | undefined;
 }
 
-const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate}) => {
+const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate, currentMonthLeaves}) => {
+    currentMonthLeaves = currentMonthLeaves ? currentMonthLeaves : [];
     if(!currentMonthAttendance){currentMonthAttendance = []}
     const numberOfWeekendDays = eachWeekendOfMonth(selectedDate).length;
-    const numberOfWorkingDaysInMonth = getDaysInMonth(selectedDate) - numberOfWeekendDays;
+    const numberOfWorkingDaysInMonth = getDaysInMonth(selectedDate) - numberOfWeekendDays - currentMonthLeaves.length;
     const numberOfDaysAttended = currentMonthAttendance?.length;
     const currentAttendancePercentage = numberOfDaysAttended*100/numberOfWorkingDaysInMonth;
     const requiredAttendanceNumber = Math.ceil(0.5 * numberOfWorkingDaysInMonth)
-    const requredDaysToCome = requiredAttendanceNumber - numberOfDaysAttended;
     return(
         <>
             <div className="w-50 stats stats-vertical shadow">
@@ -28,8 +29,7 @@ const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate}) => {
                 </div>
                 <div className="stat">
                     <div className="stat-title">Leave + Holiday</div>
-                    <div className="stat-value">{`${currentAttendancePercentage.toFixed(1)}%`}</div>
-                    <div className="stat-desc">{`Target: 50%`}</div>
+                    <div className="stat-value">{`${currentMonthLeaves.length}`}</div>
                 </div>
             </div>
         </>
