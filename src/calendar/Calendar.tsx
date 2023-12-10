@@ -75,6 +75,7 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
                     const dayOfMonth = i + 1;
                     const isDateAttended = datesAttended?.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
                     const isLeaveDate = leaveDates.get(getConcatMonthYear(selectedDate))?.includes(dayOfMonth);
+                    const isDayOfMonthToday = new Date().getDate() === dayOfMonth;
                     return <Cell 
                         isDateAttended={isDateAttended}
                         isWeekend = {isWeekend(setDate(selectedDate, dayOfMonth))}
@@ -83,7 +84,7 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
                         key={i}
                         onContextMenu={(event) => handleClickDate(dayOfMonth, true, event)}
                         >
-                            {dayOfMonth}
+                            {`${isDayOfMonthToday? `*${dayOfMonth}` : dayOfMonth}`}
                     </Cell>
                 }))}
                 {Array.from({length: 6-lastDayOfMonth}, ((_, i) => {return <Cell key={i}></Cell>}))}
