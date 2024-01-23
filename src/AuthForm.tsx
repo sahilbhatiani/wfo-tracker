@@ -1,14 +1,15 @@
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
 import { useState } from "react"
 import auth from "./firebase"
 
 const AuthForm = () => {
+    const [isSignInComponent, setIsSignInComponent] = useState(true);
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
     const handleSignInWithEmail = async () => {
         try{
-        const userCred = await signInWithEmailAndPassword(auth, email, password)
+        await signInWithEmailAndPassword(auth, email, password)
         }catch(err){
             console.log(err)
         }
@@ -24,21 +25,55 @@ const AuthForm = () => {
         })
     }
 
+    const handleSignUp = async () => {
+        createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            console.log("Signed up!")
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorMessage)
+        });
+
+    }
+
     return (
         <div className="flex flex-col items-center">
-            <span className="flex gap-2">
-                <label>Email</label>
-                <input className="border-2" value={email} onChange={(e) => setEmail(e.target.value)}></input>
-            </span>
-            <span className="flex gap-2">
-                <label>Password</label>
-                <input className="border-2" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-            </span>
-            <span className="mt-2 gap-10 flex">
-                <button className="border-2" onClick={handleSignInWithEmail}>Sign in</button>
-                <button className="border-2" onClick={handlePasswordReset}>Reset password</button>
-            </span>
-
+            { isSignInComponent ?
+            <div>
+                <h1>Sign In Tab</h1>
+                <span className="flex gap-2">
+                    <label>Email</label>
+                    <input className="border-2" value={email} onChange={(e) => setEmail(e.target.value)}></input>
+                </span>
+                <span className="flex gap-2">
+                    <label>Password</label>
+                    <input className="border-2" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                </span>
+                <span className="mt-2 gap-10 flex">
+                    <button className="border-2" onClick={handleSignInWithEmail}>Sign in</button>
+                    <button className="border-2" onClick={handlePasswordReset}>Reset password</button>
+                    <button className="border-2" onClick={() => {setIsSignInComponent(false)}}>Sign Up</button>
+                </span> 
+            </div> 
+            :
+            <div>
+                <h2>Sign Up Tab</h2>
+                <span className="flex gap-2">
+                    <label>Email</label>
+                    <input className="border-2" value={email} onChange={(e) => setEmail(e.target.value)}></input>
+                </span>
+                <span className="flex gap-2">
+                    <label>Password</label>
+                    <input className="border-2" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                </span>
+                <span className="mt-2 gap-10 flex">
+                    <button className="border-2" onClick={handleSignUp}>Sign Up</button>
+                    <button className="border-2" onClick={() => {setIsSignInComponent(true)}}>Sign In</button>
+                </span> 
+            </div>
+            }
         </div>
     )
 }
