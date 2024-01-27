@@ -1,18 +1,52 @@
 import { getConcatMonthYear } from "../common";
 import Cell from "./Cell"
+import { collection, addDoc, doc, setDoc, getDoc } from "firebase/firestore"; 
 import {format, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay, endOfMonth, addYears, subYears, setDate, isWeekend } from "date-fns";
+import { db } from "../firebase";
+import { User } from "firebase/auth";
+import firebase from "firebase/compat/app";
+import { useEffect } from "react";
+
+const datesConvertor = {
+    toFirestore: (leaveDates: Map<string, Array<number>>) => {
+        const customFirstoreObj: { [key: string]: Array<number> } = {};
+        leaveDates.forEach((dates: Array<number>, monthYear:string) => {
+            customFirstoreObj[monthYear] = dates;
+        })
+        return {customFirstoreObj};
+    },
+    fromFirestore: (snapshot: firebase.firestore.DocumentSnapshot, options: firebase.firestore.SnapshotOptions) => {
+        const firestoreData = snapshot.data(options);
+        if (!firestoreData) {
+            // Return a default value or handle the case where data is not present
+            return new Map<string, Array<number>>();
+        }
+        var leaveDates: Map<string, Array<number>> = new Map();
+    
+        for (const customFirstoreObj in firestoreData) {
+            if (Object.prototype.hasOwnProperty.call(firestoreData, customFirstoreObj)) {
+                const datesMap = firestoreData[customFirstoreObj];
+                for(const monthYear in datesMap){
+                    leaveDates.set(monthYear, datesMap[monthYear]);
+                }
+            }
+        }
+        return leaveDates;
+    }
+};
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 type Props = {
-    selectedDate?: Date;
-    setSelectedDate: (date: Date) => void;
-    datesAttended: Map<string, Array<number>>;
-    setDatesAttended: (datesAttended: Map<string, Array<number>>) => void;
-    leaveDates: Map<string, Array<number>>;
-    setLeaveDates: (leaveDates: Map<string, Array<number>>) => void;
+    user: User | null | undefined,
+    selectedDate?: Date,
+    setSelectedDate: (date: Date) => void,
+    datesAttended: Map<string, Array<number>>,
+    setDatesAttended: (datesAttended: Map<string, Array<number>>) => void,
+    leaveDates: Map<string, Array<number>>,
+    setLeaveDates: (leaveDates: Map<string, Array<number>>) => void
 }
 
-const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates}) => {
+const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates}) => {
     const nextMonth = () => setSelectedDate(addMonths(selectedDate, 1));
     const prevMonth = () => setSelectedDate(subMonths(selectedDate, 1));
     const nextYear = () => setSelectedDate(addYears(selectedDate, 1));
@@ -21,7 +55,7 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
     const firstDayOfMonth = getDay(startOfMonth(selectedDate));
     const lastDayOfMonth = getDay(endOfMonth(selectedDate));
 
-    const handleClickDate = (dayOfMonth: number, isRightClick: boolean = false, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleClickDate = async (dayOfMonth: number, isRightClick: boolean = false, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const removeDayFromNonRelevantMonth = (dayOfMonth: number) => {
             if(nonRelevantMonthDates){
                 if(nonRelevantMonthDates.includes(dayOfMonth)){
@@ -58,6 +92,66 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
         }
     }
 
+    const handleSubmitDates = async () => {
+        console.log("Submitting leave dates to firebase....")
+        try {
+            const ref = doc(db, user?.uid, "leaveDates").withConverter(datesConvertor);
+            await setDoc(ref, leaveDates)
+        }
+        catch(e){
+            console.error("Error submitting leave dates: ", e);
+        }
+
+        console.log("Submitting attended dates to firebase....")
+        try {
+            const ref = doc(db, user?.uid, "datesAttended").withConverter(datesConvertor);
+            await setDoc(ref, datesAttended)
+        }
+        catch(e){
+            console.error("Error submitting attended dates: ", e);
+        }
+
+    }
+
+    
+
+    useEffect(() => {
+        console.log(`User uid ${user?.uid}`)
+        const fetchLeaveDates = async () => {
+            try {
+                console.log("Trying to fetch data....")
+                const ref = doc(db, user?.uid, "leaveDates").withConverter(datesConvertor);
+                var docSnap = {}
+                docSnap = await getDoc(ref);
+                if(docSnap.data() !== undefined){
+                    setLeaveDates(docSnap.data())
+                }
+                console.log(typeof(docSnap.data()));
+              } catch (e) {
+                console.error("Error fetching document: ", e);
+            }
+        }
+
+        const fetchDatesAttended = async () => {
+            try {
+                console.log("Trying to fetch dates attended......")
+                const ref = doc(db, user?.uid, "datesAttended").withConverter(datesConvertor);
+                var docSnap = {}
+                docSnap = await getDoc(ref);
+                if(docSnap.data() !== undefined){
+                    setDatesAttended(docSnap.data())
+                }
+                console.log(typeof(docSnap.data()));
+              } catch (e) {
+                console.error("Error fetching document: ", e);
+            }
+        }
+        
+        fetchLeaveDates();
+        fetchDatesAttended();
+        
+    } , [])
+
     return (
         <>
 
@@ -90,6 +184,7 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
                 {Array.from({length: 6-lastDayOfMonth}, ((_, i) => {return <Cell key={i}></Cell>}))}
 
             </div>
+            <button className="border-2 border-black" onClick={handleSubmitDates}>Submit!</button>
 
         </>
     )
