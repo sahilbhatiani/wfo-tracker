@@ -1,38 +1,33 @@
 import { getConcatMonthYear } from "../common";
 import Cell from "./Cell"
-import { collection, addDoc, doc, setDoc, getDoc } from "firebase/firestore"; 
+import { collection, addDoc, doc, setDoc, getDoc, FirestoreDataConverter, DocumentSnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore"; 
 import {format, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay, endOfMonth, addYears, subYears, setDate, isWeekend } from "date-fns";
 import { db } from "../firebase";
 import { User } from "firebase/auth";
 import firebase from "firebase/compat/app";
 import { useEffect } from "react";
 
-const datesConvertor = {
+const datesConvertor: FirestoreDataConverter<Map<string, Array<number>>> = {
     toFirestore: (leaveDates: Map<string, Array<number>>) => {
         const customFirstoreObj: { [key: string]: Array<number> } = {};
         leaveDates.forEach((dates: Array<number>, monthYear:string) => {
             customFirstoreObj[monthYear] = dates;
         })
-        return {customFirstoreObj};
+        return customFirstoreObj;
     },
-    fromFirestore: (snapshot: firebase.firestore.DocumentSnapshot, options: firebase.firestore.SnapshotOptions) => {
+    fromFirestore: (snapshot: QueryDocumentSnapshot<DocumentData, DocumentData>, options: firebase.firestore.SnapshotOptions) => {
         const firestoreData = snapshot.data(options);
         if (!firestoreData) {
             // Return a default value or handle the case where data is not present
             return new Map<string, Array<number>>();
         }
         var leaveDates: Map<string, Array<number>> = new Map();
-    
-        for (const customFirstoreObj in firestoreData) {
-            if (Object.prototype.hasOwnProperty.call(firestoreData, customFirstoreObj)) {
-                const datesMap = firestoreData[customFirstoreObj];
-                for(const monthYear in datesMap){
-                    leaveDates.set(monthYear, datesMap[monthYear]);
-                }
+        for (const monthYear in firestoreData) {
+                leaveDates.set(monthYear, firestoreData[monthYear]);
             }
-        }
         return leaveDates;
     }
+    
 };
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -95,7 +90,7 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
     const handleSubmitDates = async () => {
         console.log("Submitting leave dates to firebase....")
         try {
-            const ref = doc(db, user?.uid, "leaveDates").withConverter(datesConvertor);
+            const ref = doc(db, `${user?.uid}/leaveDates`).withConverter(datesConvertor);
             await setDoc(ref, leaveDates)
         }
         catch(e){
@@ -104,7 +99,7 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
 
         console.log("Submitting attended dates to firebase....")
         try {
-            const ref = doc(db, user?.uid, "datesAttended").withConverter(datesConvertor);
+            const ref = doc(db,`${user?.uid}/datesAttended`).withConverter(datesConvertor);
             await setDoc(ref, datesAttended)
         }
         catch(e){
@@ -120,12 +115,9 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
         const fetchLeaveDates = async () => {
             try {
                 console.log("Trying to fetch data....")
-                const ref = doc(db, user?.uid, "leaveDates").withConverter(datesConvertor);
-                var docSnap = {}
-                docSnap = await getDoc(ref);
-                if(docSnap.data() !== undefined){
-                    setLeaveDates(docSnap.data())
-                }
+                const ref = doc(db, `${user?.uid}/leaveDates`).withConverter(datesConvertor);
+                const docSnap = await getDoc(ref);
+                setLeaveDates(docSnap.data() ?? new  Map<string, Array<number>>)
                 console.log(typeof(docSnap.data()));
               } catch (e) {
                 console.error("Error fetching document: ", e);
@@ -135,12 +127,9 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
         const fetchDatesAttended = async () => {
             try {
                 console.log("Trying to fetch dates attended......")
-                const ref = doc(db, user?.uid, "datesAttended").withConverter(datesConvertor);
-                var docSnap = {}
-                docSnap = await getDoc(ref);
-                if(docSnap.data() !== undefined){
-                    setDatesAttended(docSnap.data())
-                }
+                const ref = doc(db, `${user?.uid}/datesAttended`).withConverter(datesConvertor);
+                const docSnap = await getDoc(ref);
+                setDatesAttended(docSnap.data() ?? new  Map<string, Array<number>>)
                 console.log(typeof(docSnap.data()));
               } catch (e) {
                 console.error("Error fetching document: ", e);
