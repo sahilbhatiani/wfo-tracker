@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Calendar from './calendar/Calendar'
-import { getConcatMonthYear } from './common';
+import { MyButton, getConcatMonthYear } from './common';
 import Stats from './Stats';
 import AuthForm from './AuthForm';
 import auth, { db } from './firebase';
@@ -54,13 +54,13 @@ const handleSubmitDates = async () => {
         <div className='flex flex-row place-content-between h-12 px-4 mt-2'>
 
           <h1 className="flex items-center justify-center font-mono text-slate-800 text-2xl font-extrabold ">WORK FROM OFFICE TRACKER</h1>
-          <button id='btn-login' className="w-20 h-8 border-4 border-slate-600 bg-slate-600 text-white font-medium rounded-lg" onClick={handleSignOut}>Sign out</button>
+          <MyButton color='slate' onClick={handleSignOut}>Sign Out</MyButton>
         </div>
   `      <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
   `       <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
           <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates}/>
-        </div>
-        <button className="w-20 h-12 place-self-center mb-10 border-4 border-slate-600 bg-slate-600 text-white font-semibold rounded-lg" onClick={handleSubmitDates}>Submit</button>
+        </div>        
+        <MyButton className="place-self-center mb-10" color={"slate"} onClick={handleSubmitDates}>Submit</MyButton>
     </div>
     }
     </div>

@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
 import { useState } from "react"
 import auth from "./firebase"
+import { MyButton } from "./common";
 
 const AuthForm = () => {
     const [isSignInComponent, setIsSignInComponent] = useState(true);
@@ -52,9 +53,9 @@ const AuthForm = () => {
                     <input className="border-2" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                 </span>
                 <span className="mt-2 gap-10 flex">
-                    <button className="border-2" onClick={handleSignInWithEmail}>Sign in</button>
-                    <button className="border-2" onClick={handlePasswordReset}>Reset password</button>
-                    <button className="border-2" onClick={() => {setIsSignInComponent(false)}}>Sign Up</button>
+                    <MyButton className="" color='slate' onClick={handleSignInWithEmail}>Sign in</MyButton>
+                    <MyButton className="" color='slate' onClick={handlePasswordReset}>Reset password</MyButton>
+                    <MyButton className="" color='slate' onClick={() => {setIsSignInComponent(false)}}>Sign Up</MyButton>
                 </span> 
             </div> 
             :
