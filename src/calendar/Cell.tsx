@@ -15,15 +15,20 @@ const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className
             onClick={isWeekend ? undefined : onClick} 
             onContextMenu={isWeekend? undefined: onContextMenu}
             className={clsx(
-                "h-12 flex items-center justify-center border-stone-300 transition-colors",
-                {"cursor-pointer hover:bg-gray-100": !isWeekend && !isDateAttended &&!isLeaveDate && !!onClick}, className,
-                {"cursor-pointer bg-cyan-400 text-white": !isWeekend && isDateAttended},
-                {"bg-gray-200": isWeekend},
-                {"cursor-pointer bg-gray-400": isLeaveDate},
-                "h-full border text-xl"
-                )
+                "flex items-center justify-center transition-colors",
+                className,
+                {"bg-slate-200": isWeekend},
+                {"cursor-pointer": !isWeekend && !!onClick},
+                "h-full text-xl"
+                )   
             }>
-            {children}
+            {(!isWeekend && isDateAttended) || isLeaveDate ? <div className={clsx(
+                'h-12 aspect-square flex items-center justify-center rounded-full border-2 absolute shadow-2xl',
+                { "bg-emerald-400 font-medium text-white border-emerald-600": isDateAttended},
+                {" bg-slate-300 border-slate-600": isLeaveDate}
+                )}>
+                {children}
+            </div> : children}
         </div>
     )
 }

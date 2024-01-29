@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { collection, addDoc } from "firebase/firestore"; 
 
 
 const firebaseConfig = {
@@ -19,20 +18,6 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp)
 export const db = getFirestore(firebaseApp)
 // connectAuthEmulator(auth, "http://127.0.0.1:9099")
-
-// try {
-//     const docRef = await addDoc(collection(db, "users"), {
-//       first: "TEST1",
-//       last: "tEST 2",
-//       born: {
-//         "Hello": [1,23,4],
-//         "Bye": [1,22,0]
-//       }
-//     });
-//     console.log("Document written with ID: ", docRef.id);
-//   } catch (e) {
-//     console.error("Error adding document: ", e);
-//   }
 
 export default auth;
 

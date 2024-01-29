@@ -1,34 +1,12 @@
 import { getConcatMonthYear } from "../common";
 import Cell from "./Cell"
-import { collection, addDoc, doc, setDoc, getDoc, FirestoreDataConverter, DocumentSnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore"; 
+import { doc, getDoc} from "firebase/firestore"; 
 import {format, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay, endOfMonth, addYears, subYears, setDate, isWeekend } from "date-fns";
 import { db } from "../firebase";
 import { User } from "firebase/auth";
-import firebase from "firebase/compat/app";
 import { useEffect } from "react";
+import { datesConvertor } from "../firestoreDB";
 
-const datesConvertor: FirestoreDataConverter<Map<string, Array<number>>> = {
-    toFirestore: (leaveDates: Map<string, Array<number>>) => {
-        const customFirstoreObj: { [key: string]: Array<number> } = {};
-        leaveDates.forEach((dates: Array<number>, monthYear:string) => {
-            customFirstoreObj[monthYear] = dates;
-        })
-        return customFirstoreObj;
-    },
-    fromFirestore: (snapshot: QueryDocumentSnapshot<DocumentData, DocumentData>, options: firebase.firestore.SnapshotOptions) => {
-        const firestoreData = snapshot.data(options);
-        if (!firestoreData) {
-            // Return a default value or handle the case where data is not present
-            return new Map<string, Array<number>>();
-        }
-        var leaveDates: Map<string, Array<number>> = new Map();
-        for (const monthYear in firestoreData) {
-                leaveDates.set(monthYear, firestoreData[monthYear]);
-            }
-        return leaveDates;
-    }
-    
-};
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 type Props = {
@@ -86,30 +64,7 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
             setLeaveDates(new Map<string, Array<number>>(leaveDates.set(monthYear, nonRelevantMonthDates ? nonRelevantMonthDates:new Array<number>)));
         }
     }
-
-    const handleSubmitDates = async () => {
-        console.log("Submitting leave dates to firebase....")
-        try {
-            const ref = doc(db, `${user?.uid}/leaveDates`).withConverter(datesConvertor);
-            await setDoc(ref, leaveDates)
-        }
-        catch(e){
-            console.error("Error submitting leave dates: ", e);
-        }
-
-        console.log("Submitting attended dates to firebase....")
-        try {
-            const ref = doc(db,`${user?.uid}/datesAttended`).withConverter(datesConvertor);
-            await setDoc(ref, datesAttended)
-        }
-        catch(e){
-            console.error("Error submitting attended dates: ", e);
-        }
-
-    }
-
     
-
     useEffect(() => {
         console.log(`User uid ${user?.uid}`)
         const fetchLeaveDates = async () => {
@@ -144,15 +99,18 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
     return (
         <>
 
-            <div className="w-3/5 h-2/3 grid grid-cols-7">
-                <Cell onClick={prevYear}>{"<<"}</Cell>
-                <Cell onClick={prevMonth}>{"<"}</Cell>
-                <Cell onClick={() => setSelectedDate(new Date())} className="col-span-3">{format(selectedDate, "LLLL yyyy")}</Cell>
-                <Cell onClick={nextMonth}>{">"}</Cell>
-                <Cell onClick={nextYear}>{">>"}</Cell>
-                {daysOfWeek.map(day => 
-                    <Cell key={day} className="text-sm font-bold">{day}</Cell>
-                )}
+            <div className="w-3/4 h-5/6 grid grid-cols-7 bg-white rounded-t-xl border-4 border-slate-700 shadow-2xl relative max-w-6xl">
+                <div className="border-4 border-slate-700 col-span-7 grid grid-cols-7 bg-slate-700 shadow-lg text-white cursor-pointer">
+                    <Cell onClick={prevYear}>{"<<"}</Cell>
+                    <Cell onClick={prevMonth}>{"<"}</Cell>
+                    <Cell onClick={() => setSelectedDate(new Date())} className="col-span-3">{format(selectedDate, "LLLL yyyy")}</Cell>
+                    <Cell onClick={nextMonth}>{">"}</Cell>
+                    <Cell onClick={nextYear}>{">>"}</Cell>
+                </div>
+                    {daysOfWeek.map(day => 
+                        <Cell key={day} className="text-sm font-bold">{day}</Cell>
+                    )}
+
                 {Array.from(Array(firstDayOfMonth)).map((_, idx) => <Cell key={idx}> </Cell>)}
                 {Array.from({length: numOfDays}, ((_, i) => {
                     const dayOfMonth = i + 1;
@@ -173,8 +131,6 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
                 {Array.from({length: 6-lastDayOfMonth}, ((_, i) => {return <Cell key={i}></Cell>}))}
 
             </div>
-            <button className="border-2 border-black" onClick={handleSubmitDates}>Submit!</button>
-
         </>
     )
 }
