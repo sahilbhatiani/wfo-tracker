@@ -17,9 +17,10 @@ type Props = {
     setDatesAttended: (datesAttended: Map<string, Array<number>>) => void,
     leaveDates: Map<string, Array<number>>,
     setLeaveDates: (leaveDates: Map<string, Array<number>>) => void
+    setMsg: (msg: string) => void;
 }
 
-const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates}) => {
+const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates, setMsg}) => {
     const nextMonth = () => setSelectedDate(addMonths(selectedDate, 1));
     const prevMonth = () => setSelectedDate(subMonths(selectedDate, 1));
     const nextYear = () => setSelectedDate(addYears(selectedDate, 1));
@@ -29,6 +30,7 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
     const lastDayOfMonth = getDay(endOfMonth(selectedDate));
 
     const handleClickDate = async (dayOfMonth: number, isRightClick: boolean = false, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        setMsg('');
         const removeDayFromNonRelevantMonth = (dayOfMonth: number) => {
             if(nonRelevantMonthDates){
                 if(nonRelevantMonthDates.includes(dayOfMonth)){
@@ -99,7 +101,7 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
     return (
         <>
 
-            <div className="w-3/4 h-5/6 grid grid-cols-7 bg-white rounded-t-xl border-4 border-slate-700 shadow-2xl relative max-w-6xl">
+            <div className="w-full h-full grid grid-cols-7 bg-white rounded-t-xl border-4 border-slate-700 shadow-2xl relative max-w-6xl">
                 <div className="border-4 border-slate-700 col-span-7 grid grid-cols-7 bg-slate-700 shadow-lg text-white cursor-pointer">
                     <Cell onClick={prevYear}>{"<<"}</Cell>
                     <Cell onClick={prevMonth}>{"<"}</Cell>
