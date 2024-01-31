@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Calendar from './calendar/Calendar'
 import { MyButton, getConcatMonthYear } from './common';
 import Stats from './Stats';
@@ -10,14 +10,14 @@ import { datesConvertor } from './firestoreDB';
 
 
 function App() {
-  const [datesAttended, setDatesAttended] = useState(new Map<string, Array<number>>())
+  const [datesAttended, setDatesAttended] = useState(new Map<string, Array<number>>(Object.entries(JSON.parse(localStorage.getItem('attended') ?? '{}'))));
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [leaveDates, setLeaveDates] = useState(new Map<string, Array<number>>())
+  const [leaveDates, setLeaveDates] = useState(new Map<string, Array<number>>(Object.entries(JSON.parse(localStorage.getItem('leaved') ?? '{}'))));
   const disableDefaultRightClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event.preventDefault();
   const [user] = useAuthState(auth)
 
   
-  const handleSignOut = async () => {
+const handleSignOut = async () => {
     try{
         auth.signOut();
         window.location.reload();
