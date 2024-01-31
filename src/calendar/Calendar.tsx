@@ -1,18 +1,25 @@
 import { getConcatMonthYear } from "../common";
 import Cell from "./Cell"
+import { doc, getDoc} from "firebase/firestore"; 
 import {format, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay, endOfMonth, addYears, subYears, setDate, isWeekend } from "date-fns";
+import { db } from "../firebase";
+import { User } from "firebase/auth";
+import { useEffect } from "react";
+import { datesConvertor } from "../firestoreDB";
+
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 type Props = {
-    selectedDate?: Date;
-    setSelectedDate: (date: Date) => void;
-    datesAttended: Map<string, Array<number>>;
-    setDatesAttended: (datesAttended: Map<string, Array<number>>) => void;
-    leaveDates: Map<string, Array<number>>;
-    setLeaveDates: (leaveDates: Map<string, Array<number>>) => void;
+    user: User | null | undefined,
+    selectedDate?: Date,
+    setSelectedDate: (date: Date) => void,
+    datesAttended: Map<string, Array<number>>,
+    setDatesAttended: (datesAttended: Map<string, Array<number>>) => void,
+    leaveDates: Map<string, Array<number>>,
+    setLeaveDates: (leaveDates: Map<string, Array<number>>) => void
 }
 
-const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates}) => {
+const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates}) => {
     const nextMonth = () => setSelectedDate(addMonths(selectedDate, 1));
     const prevMonth = () => setSelectedDate(subMonths(selectedDate, 1));
     const nextYear = () => setSelectedDate(addYears(selectedDate, 1));
@@ -21,7 +28,7 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
     const firstDayOfMonth = getDay(startOfMonth(selectedDate));
     const lastDayOfMonth = getDay(endOfMonth(selectedDate));
 
-    const handleClickDate = (dayOfMonth: number, isRightClick: boolean = false, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleClickDate = async (dayOfMonth: number, isRightClick: boolean = false, event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const removeDayFromNonRelevantMonth = (dayOfMonth: number) => {
             if(nonRelevantMonthDates){
                 if(nonRelevantMonthDates.includes(dayOfMonth)){
@@ -57,19 +64,53 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
             setLeaveDates(new Map<string, Array<number>>(leaveDates.set(monthYear, nonRelevantMonthDates ? nonRelevantMonthDates:new Array<number>)));
         }
     }
+    
+    useEffect(() => {
+        console.log(`User uid ${user?.uid}`)
+        const fetchLeaveDates = async () => {
+            try {
+                console.log("Trying to fetch data....")
+                const ref = doc(db, `${user?.uid}/leaveDates`).withConverter(datesConvertor);
+                const docSnap = await getDoc(ref);
+                setLeaveDates(docSnap.data() ?? new  Map<string, Array<number>>)
+                console.log(typeof(docSnap.data()));
+              } catch (e) {
+                console.error("Error fetching document: ", e);
+            }
+        }
+
+        const fetchDatesAttended = async () => {
+            try {
+                console.log("Trying to fetch dates attended......")
+                const ref = doc(db, `${user?.uid}/datesAttended`).withConverter(datesConvertor);
+                const docSnap = await getDoc(ref);
+                setDatesAttended(docSnap.data() ?? new  Map<string, Array<number>>)
+                console.log(typeof(docSnap.data()));
+              } catch (e) {
+                console.error("Error fetching document: ", e);
+            }
+        }
+        
+        fetchLeaveDates();
+        fetchDatesAttended();
+        
+    } , [])
 
     return (
         <>
 
-            <div className="w-3/5 h-2/3 grid grid-cols-7">
-                <Cell onClick={prevYear}>{"<<"}</Cell>
-                <Cell onClick={prevMonth}>{"<"}</Cell>
-                <Cell onClick={() => setSelectedDate(new Date())} className="col-span-3">{format(selectedDate, "LLLL yyyy")}</Cell>
-                <Cell onClick={nextMonth}>{">"}</Cell>
-                <Cell onClick={nextYear}>{">>"}</Cell>
-                {daysOfWeek.map(day => 
-                    <Cell key={day} className="text-sm font-bold">{day}</Cell>
-                )}
+            <div className="w-3/4 h-5/6 grid grid-cols-7 bg-white rounded-t-xl border-4 border-slate-700 shadow-2xl relative max-w-6xl">
+                <div className="border-4 border-slate-700 col-span-7 grid grid-cols-7 bg-slate-700 shadow-lg text-white cursor-pointer">
+                    <Cell onClick={prevYear}>{"<<"}</Cell>
+                    <Cell onClick={prevMonth}>{"<"}</Cell>
+                    <Cell onClick={() => setSelectedDate(new Date())} className="col-span-3">{format(selectedDate, "LLLL yyyy")}</Cell>
+                    <Cell onClick={nextMonth}>{">"}</Cell>
+                    <Cell onClick={nextYear}>{">>"}</Cell>
+                </div>
+                    {daysOfWeek.map(day => 
+                        <Cell key={day} className="text-sm font-bold">{day}</Cell>
+                    )}
+
                 {Array.from(Array(firstDayOfMonth)).map((_, idx) => <Cell key={idx}> </Cell>)}
                 {Array.from({length: numOfDays}, ((_, i) => {
                     const dayOfMonth = i + 1;
@@ -90,7 +131,6 @@ const Calendar: React.FC<Props> = ({selectedDate = new Date(), setSelectedDate, 
                 {Array.from({length: 6-lastDayOfMonth}, ((_, i) => {return <Cell key={i}></Cell>}))}
 
             </div>
-
         </>
     )
 }

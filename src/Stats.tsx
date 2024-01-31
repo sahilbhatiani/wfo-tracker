@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { eachWeekendOfMonth, getDaysInMonth } from "date-fns";
 
 type Props = {
@@ -16,19 +17,28 @@ const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate, currentMo
     const requiredAttendanceNumber = Math.ceil(0.5 * numberOfWorkingDaysInMonth)
     return(
         <>
-            <div className="w-50 stats stats-vertical shadow">
-                <div className="stat">
-                    <div className="stat-title">DAYS IN</div>
-                    <div className="stat-value">{numberOfDaysAttended}</div>
-                    <div className="stat-desc">{`Target: ${requiredAttendanceNumber}`}</div>
+            <div className={clsx(
+                "w-50 stats stats-vertical shadow no-scrollbar border-4 shadow-2xl border-slate-600 ",
+                {'transition easy-linear ': currentAttendancePercentage >= 50},
+                )}>
+                <div className="stat ">
+                    <div className="stat-title text-black">DAYS IN</div>
+                    <div className={clsx(
+                "stat-value",
+                {'transition easy-linear text-green-600': currentAttendancePercentage >= 50}
+                )}>{numberOfDaysAttended}</div>
+                    <div className="stat-desc text-black">{`Target: ${requiredAttendanceNumber}`}</div>
                 </div>
                 <div className="stat">
-                    <div className="stat-title">% IN</div>
-                    <div className="stat-value">{`${currentAttendancePercentage.toFixed(1)}%`}</div>
-                    <div className="stat-desc">{`Target: 50%`}</div>
+                    <div className="stat-title text-black">% IN</div>
+                    <div className= {clsx(
+                "stat-value",
+                {'transition easy-linear text-green-600': currentAttendancePercentage >= 50}
+                )}>{`${currentAttendancePercentage.toFixed(1)}%`}</div>
+                    <div className="stat-desc text-black">{`Target: 50%`}</div>
                 </div>
                 <div className="stat">
-                    <div className="stat-title">Leave + Holiday</div>
+                    <div className="stat-title text-black">Leave + Holiday</div>
                     <div className="stat-value">{`${currentMonthLeaves.length}`}</div>
                 </div>
             </div>
