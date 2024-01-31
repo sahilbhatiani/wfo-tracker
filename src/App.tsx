@@ -48,11 +48,10 @@ const handleSubmitDates = async () => {
 }
 
   return (
-    <div className='flex flex-col align-center justify-center border h-screen bg-slate-50'>
+    <div className='flex flex-col align-center justify-center h-screen bg-slate-50'>
     {!user ? <AuthForm/> : 
     <div className='flex flex-col h-screen' onContextMenu={disableDefaultRightClick}>
         <div className='flex flex-row place-content-between h-12 px-4 mt-2'>
-
           <h1 className="flex items-center justify-center font-mono text-slate-800 text-2xl font-extrabold ">WORK FROM OFFICE TRACKER</h1>
           <MyButton color='slate' onClick={handleSignOut}>Sign Out</MyButton>
         </div>
