@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
 import { useState } from "react"
 import auth from "./firebase"
-import { MyButton } from "./common";
+import { AppTitle, MyButton } from "./common";
 import clsx from "clsx";
 import { FirebaseAuthError, UNKNOWN_ERROR, errorCodes } from "./authErrorCode";
 
@@ -83,7 +83,7 @@ const AuthForm = () => {
     return (
         <div className="flex flex-col h-screen">
             <div className='flex flex-row h-12 px-4 mt-2'>
-                <h1 className="flex items-center justify-center font-mono text-slate-800 text-2xl font-extrabold ">WORK FROM OFFICE TRACKER</h1>
+                <AppTitle/>
             </div>
 
             {/* Sign IN/UP Tabs */}

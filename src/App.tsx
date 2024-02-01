@@ -1,6 +1,6 @@
 import { useState} from 'react'
 import Calendar from './calendar/Calendar'
-import { MyButton, getConcatMonthYear } from './common';
+import { AppTitle, MyButton, getConcatMonthYear } from './common';
 import Stats from './Stats';
 import AuthForm from './AuthForm';
 import auth, { db } from './firebase';
@@ -47,8 +47,11 @@ const handleSubmitDates = async () => {
     {!user ? <AuthForm/> : 
     <div className='flex flex-col h-screen' onContextMenu={disableDefaultRightClick}>
         <div className='flex flex-row place-content-between h-12 px-4 mt-2'>
-          <h1 className="flex items-center justify-center font-mono text-slate-800 text-2xl font-extrabold ">WORK FROM OFFICE TRACKER</h1>
-          <MyButton color='slate' onClick={handleSignOut}>Sign Out</MyButton>
+          <AppTitle/>
+          <div className='flex flex-row gap-2 items-center'>
+            <p className='font-bold'>{user.email}</p>
+            <MyButton color='slate' onClick={handleSignOut}>Sign Out</MyButton>
+          </div>
         </div>
   `      <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
   `       <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>

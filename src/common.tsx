@@ -25,3 +25,12 @@ export const MyButton:React.FC<ButtonProps>  = ({className, onClick=undefined, c
         </button>
     )
 }
+
+export const AppTitle = () => {
+    return(
+        <div className="flex flex-col font-mono text-slate-800 text-2xl font-extrabold gap-0 relative">
+            <div>WORK FROM OFFICE TRACKER</div>
+            <div className='text-right text-xs font-semibold relative top-[-5px]'>Created by Sahil Bhatiani</div>
+        </div>
+    )
+}
