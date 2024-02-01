@@ -1,41 +1,81 @@
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
 import { useState } from "react"
 import auth from "./firebase"
-import { MyButton } from "./common";
+import { AppTitle, MyButton } from "./common";
 import clsx from "clsx";
+import { FirebaseAuthError, UNKNOWN_ERROR, errorCodes } from "./authErrorCode";
 
 const AuthForm = () => {
     const [isSignInComponent, setIsSignInComponent] = useState(true);
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [msg, setMsg] = useState('')
+
+    const resetStates = () => {
+        setEmail('');
+        setPassword('');
+        setMsg('');
+    }
 
     const handleSignInWithEmail = async () => {
         try{
-        await signInWithEmailAndPassword(auth, email, password)
-        }catch(err){
-            console.log(err)
+            if (email.trim() === '' || password.trim() === '') {
+                setMsg('Please fill out all fields.');
+                return;
+            }
+            await signInWithEmailAndPassword(auth, email, password)
         }
+        catch (e) {
+            const error = e as {code:FirebaseAuthError};
+            const errCode: FirebaseAuthError = error.code;
+            if(errCode in errorCodes){
+                setMsg(errorCodes[errCode]);
+            }
+            else{
+                setMsg(`${UNKNOWN_ERROR} - ${error.code}}`)
+            }
+        };
     }
 
     const handlePasswordReset = async () => {
+        if (email.trim() === '' || password.trim() === '') {
+            setMsg('Please fill out all fields.');
+            return;
+        }
         sendPasswordResetEmail(auth, email)
         .then(() =>
-            console.log("Password reset email sent!")
+            setMsg('Password reset email sent!')
         )
-        .catch((error) => {
-            console.log(error.message)
-        })
+        .catch((e) => {
+            const error = e as {code:FirebaseAuthError};
+            const errCode: FirebaseAuthError = error.code;
+            if(errCode in errorCodes){
+                setMsg(errorCodes[errCode]);
+            }
+            else{
+                setMsg(`${UNKNOWN_ERROR} - ${error.code}}`)
+            }
+        });
     }
 
     const handleSignUp = async () => {
+        if (email.trim() === '' || password.trim() === '') {
+            setMsg('Please fill out all fields.');
+            return;
+        }
         createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            console.log("Signed up!")
+        .then(() => {
+            setMsg("User signed up successfully!")
         })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorMessage)
+        .catch((e) => {
+            const error = e as {code:FirebaseAuthError};
+            const errCode: FirebaseAuthError = error.code;
+            if(errCode in errorCodes){
+                setMsg(errorCodes[errCode]);
+            }
+            else{
+                setMsg(`${UNKNOWN_ERROR} - ${error.code}}`)
+            }
         });
 
     }
@@ -43,7 +83,7 @@ const AuthForm = () => {
     return (
         <div className="flex flex-col h-screen">
             <div className='flex flex-row h-12 px-4 mt-2'>
-                <h1 className="flex items-center justify-center font-mono text-slate-800 text-2xl font-extrabold ">WORK FROM OFFICE TRACKER</h1>
+                <AppTitle/>
             </div>
 
             {/* Sign IN/UP Tabs */}
@@ -52,31 +92,37 @@ const AuthForm = () => {
                     <h1 className={clsx("flex-auto hover:cursor-pointer font-semibold flex items-center justify-center rounded-tl-2xl",
                         {'bg-slate-50 text-black hover:bg-slate-100' : isSignInComponent},
                         {'text-white bg-slate-700 border-slate-700 hover:bg-slate-500':!isSignInComponent}
-                    )} onClick={() => {setIsSignInComponent(true)}}>SIGN IN </h1>
+                    )} onClick={() => {setIsSignInComponent(true);resetStates()}}>SIGN IN </h1>
                     <h1 className={clsx("flex-auto hover:cursor-pointer font-semibold flex items-center justify-center rounded-tr-2xl",
                         {'bg-slate-50 text-black hover:bg-slate-100' : !isSignInComponent},
                         {'text-white bg-slate-700 border-slate-700 hover:bg-slate-500 hover:border-slate-500': isSignInComponent}
-                    )} onClick={() => {setIsSignInComponent(false)}}>SIGN UP</h1>
+                    )} onClick={() => {setIsSignInComponent(false);resetStates()}}>SIGN UP</h1>
                 </div>
                 <div className="border-2 h-full flex flex-col justify-center items-center">
+                    {/* Error logs */}
+                    <label className="flex justify-center mb-5 text-rose-500 text-sm">{msg}</label>
+
+                    {/* Inputs */}
                     <div className="flex flex-col">
                         <label>Email</label>
-                        <input className="border-2" value={email} onChange={(e) => setEmail(e.target.value)}></input>
+                        <input className="border-2" value={email} onChange={(e) => setEmail(e.target.value)} required></input>
                     </div>
                     <div className="flex flex-col">
                         <label>Password</label>
-                        <input type='password' className="border-2" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                        <input type='password' className="border-2" value={password} onChange={(e) => setPassword(e.target.value)} required></input>
                     </div>
-                { isSignInComponent ?
-                    <div className="mt-2 gap-6 flex">
-                        <MyButton className="" color='slate' onClick={handleSignInWithEmail}>Sign in</MyButton>
-                        <MyButton className="" color='slate' onClick={handlePasswordReset}>Reset password</MyButton>
-                    </div> 
-                    :
-                    <span className="mt-4 gap-10 flex">
-                        <MyButton className="" color='slate' onClick={handleSignUp}>Sign Up</MyButton>
-                    </span> 
-                }
+
+                    {/* Buttons */}
+                    { isSignInComponent ?
+                        <div className="mt-2 gap-6 flex">
+                            <MyButton className="" color='slate' onClick={handleSignInWithEmail}>Sign in</MyButton>
+                            <MyButton className="" color='slate' onClick={handlePasswordReset}>Reset password</MyButton>
+                        </div> 
+                        :
+                        <span className="mt-4 gap-10 flex">
+                            <MyButton className="" color='slate' onClick={handleSignUp}>Sign Up</MyButton>
+                        </span> 
+                    }
                 </div>
             </div>
         </div>
