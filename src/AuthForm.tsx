@@ -87,7 +87,7 @@ const AuthForm = () => {
             </div>
 
             {/* Sign IN/UP Tabs */}
-            <div className="flex flex-col self-center my-auto border-4 w-2/3 aspect-square max-w-xl border-slate-700 rounded-t-2xl shadow-2xl">
+            <div className="flex flex-col self-center my-auto border-[3px] w-2/3 aspect-square max-w-xl border-slate-700 rounded-t-2xl shadow-2xl">
                 <div className="flex flex-row place-content-around h-12 bg-slate-700 rounded-t-md shadow-md">
                     <h1 className={clsx("flex-auto hover:cursor-pointer font-semibold flex items-center justify-center rounded-tl-2xl",
                         {'bg-slate-50 text-black hover:bg-slate-100' : isSignInComponent},

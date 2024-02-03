@@ -15,17 +15,17 @@ const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className
             onClick={isWeekend ? undefined : onClick} 
             onContextMenu={isWeekend? undefined: onContextMenu}
             className={clsx(
-                "flex items-center justify-center transition-colors",
                 className,
+                "flex items-center justify-center transition-colors h-full text-xl",
                 {"bg-slate-200": isWeekend},
-                {"cursor-pointer": !isWeekend && !!onClick},
-                "h-full text-xl"
+                {"": !isWeekend && !!onClick},
                 )   
             }>
-            {(!isWeekend && isDateAttended) || isLeaveDate ? <div className={clsx(
-                'h-12 aspect-square flex items-center justify-center rounded-full border-2 absolute shadow-2xl',
-                { "bg-emerald-400 font-medium text-white border-emerald-600": isDateAttended},
-                {" bg-slate-300 border-slate-600": isLeaveDate}
+            {!isWeekend && !!onClick? <div className={clsx(
+                'h-12 aspect-square flex items-center justify-center rounded-full shadow-2xl cursor-pointer',
+                { "bg-emerald-400 font-medium text-white border-2 border-emerald-700 hover:bg-emerald-300": isDateAttended},
+                {" bg-slate-300 border-slate-600 border-2 hover:bg-slate-200": isLeaveDate},
+                {"hover:bg-slate-100": !isLeaveDate && !isDateAttended}
                 )}>
                 {children}
             </div> : children}
@@ -34,18 +34,4 @@ const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className
 }
 
 export default Cell;
-
-// React.ReactNode accepts the most inputs
-// interface ReactNodeProps {
-//     children: React.ReactNode;
-//     className?: string;
-//   }
-  
-//   const Cell = (props: ReactNodeProps) => {
-//     return (
-//     <div className={props.className}>
-//         {props.children}
-//     </div>)}
-  
-//   export default Cell;
 

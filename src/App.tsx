@@ -43,7 +43,7 @@ const handleSubmitDates = async () => {
 }
 
   return (
-    <div className='flex flex-col align-center justify-center h-screen bg-slate-50'>
+    <div className='flex flex-col align-center justify-center h-screen bg-slate-50 min-h-[400px] min-w-[600px]'>
     {!user ? <AuthForm/> : 
     <div className='flex flex-col h-screen' onContextMenu={disableDefaultRightClick}>
         <div className='flex flex-row place-content-between h-12 px-4 mt-2'>
@@ -55,12 +55,12 @@ const handleSubmitDates = async () => {
         </div>
   `      <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
   `       <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
-          <div className='w-3/4 h-5/6 border-2 relative'>
+          <div className='w-3/4 h-5/6 mb-14 relative'>
             <div className='absolute top-[-40px] right-1/2 text-slate-800 font-semibold'>{msg}</div>
             <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg}/>
           </div>
         </div>        
-        <MyButton className="place-self-center mb-10" color={"slate"} onClick={handleSubmitDates}>Save</MyButton>
+        <MyButton className="place-self-center mb-5 mt-5" color={"slate"} onClick={handleSubmitDates}>Save</MyButton>
     </div>
     }
     </div>

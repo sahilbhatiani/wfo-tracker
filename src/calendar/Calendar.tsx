@@ -6,6 +6,7 @@ import { db } from "../firebase";
 import { User } from "firebase/auth";
 import { useEffect } from "react";
 import { datesConvertor } from "../firestoreDB";
+import HeaderCell from "./HeaderCell";
 
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -100,19 +101,18 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
 
     return (
         <>
+            <header className="border-2 border-slate-700 col-span-7 grid grid-cols-7 bg-slate-700 shadow-2xl text-white cursor-pointer rounded-t-2xl w-full h-1/6">
+                    <HeaderCell className="text-center rounded-tl-2xl" onClick={prevYear}>{"<<"}</HeaderCell>
+                    <HeaderCell className="text-right" onClick={prevMonth}>{"<"}</HeaderCell>
+                    <HeaderCell className="text-center col-span-3 text-lg" onClick={() => setSelectedDate(new Date())}>{format(selectedDate, "LLLL yyyy")}</HeaderCell>
+                    <HeaderCell className="text-left" onClick={nextMonth}>{">"}</HeaderCell>
+                    <HeaderCell className="text-center rounded-tr-2xl"    onClick={nextYear}>{">>"}</HeaderCell>
+            </header>
 
-            <div className="w-full h-full grid grid-cols-7 bg-white rounded-t-xl border-4 border-slate-700 shadow-2xl relative max-w-6xl">
-                <div className="border-4 border-slate-700 col-span-7 grid grid-cols-7 bg-slate-700 shadow-lg text-white cursor-pointer">
-                    <Cell onClick={prevYear}>{"<<"}</Cell>
-                    <Cell onClick={prevMonth}>{"<"}</Cell>
-                    <Cell onClick={() => setSelectedDate(new Date())} className="col-span-3">{format(selectedDate, "LLLL yyyy")}</Cell>
-                    <Cell onClick={nextMonth}>{">"}</Cell>
-                    <Cell onClick={nextYear}>{">>"}</Cell>
-                </div>
-                    {daysOfWeek.map(day => 
-                        <Cell key={day} className="text-sm font-bold">{day}</Cell>
+            <div className="w-full h-full grid grid-cols-7 bg-white border-x-2 border-slate-700 border-b-2 shadow-2xl relative max-w-6xl">
+                {daysOfWeek.map(day => 
+                        <HeaderCell key={day} className="text-sm font-bold">{day}</HeaderCell>
                     )}
-
                 {Array.from(Array(firstDayOfMonth)).map((_, idx) => <Cell key={idx}> </Cell>)}
                 {Array.from({length: numOfDays}, ((_, i) => {
                     const dayOfMonth = i + 1;
