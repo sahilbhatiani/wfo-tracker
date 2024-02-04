@@ -22,9 +22,9 @@ const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className
                 )   
             }>
             {!isWeekend && !!onClick? <div className={clsx(
-                'h-12 aspect-square flex items-center justify-center rounded-full shadow-2xl cursor-pointer',
-                { "bg-emerald-400 font-medium text-white border-2 border-emerald-700 hover:bg-emerald-300": isDateAttended},
-                {" bg-slate-300 border-slate-600 border-2 hover:bg-slate-200": isLeaveDate},
+                'h-12 aspect-square flex items-center justify-center rounded-full cursor-pointer',
+                {"shadow-sm shadow-emerald-800 bg-emerald-400 font-medium text-white border-2  border-emerald-700 hover:bg-emerald-300": isDateAttended},
+                {"shadow-sm shadow-slate-700 bg-slate-300 border-slate-600 border-2 hover:bg-slate-200": isLeaveDate},
                 {"hover:bg-slate-100": !isLeaveDate && !isDateAttended}
                 )}>
                 {children}
