@@ -1,6 +1,6 @@
 import { useState} from 'react'
 import Calendar from './calendar/Calendar'
-import { AppTitle, MyButton, getConcatMonthYear } from './common';
+import { AppTitle, DATES_ATTENDED_PATH, LEAVE_DATES_PATH, MyButton, getConcatMonthYear } from './common';
 import Stats from './Stats';
 import AuthForm from './AuthForm';
 import auth, { db } from './firebase';
@@ -24,16 +24,15 @@ const handleSignOut = async () => {
         window.location.reload();
     }
     catch(err){
-        console.log(err)
+        console.error(err)
     }
 }
 const handleSubmitDates = async () => {
-  console.log("Submitting leave dates to firebase....")
   try {
-      const ref1 = doc(db, `${user?.uid}/leaveDates`).withConverter(datesConvertor);
-      await setDoc(ref1, leaveDates);
-      const ref2 = doc(db,`${user?.uid}/datesAttended`).withConverter(datesConvertor);
-      await setDoc(ref2, datesAttended);
+      const refLeaveDates = doc(db, `${user?.uid}/${LEAVE_DATES_PATH}`).withConverter(datesConvertor);
+      await setDoc(refLeaveDates, leaveDates);
+      const refDatesAttended = doc(db,`${user?.uid}/${DATES_ATTENDED_PATH}`).withConverter(datesConvertor);
+      await setDoc(refDatesAttended, datesAttended);
       setMsg('Changes saved!')
   }
   catch(e){
@@ -43,7 +42,7 @@ const handleSubmitDates = async () => {
 }
 
   return (
-    <div className='flex flex-col align-center justify-center h-screen bg-slate-50'>
+    <div className='flex flex-col align-center justify-center h-screen bg-slate-50 min-h-[400px] min-w-[600px]'>
     {!user ? <AuthForm/> : 
     <div className='flex flex-col h-screen' onContextMenu={disableDefaultRightClick}>
         <div className='flex flex-row place-content-between h-12 px-4 mt-2'>
@@ -55,12 +54,12 @@ const handleSubmitDates = async () => {
         </div>
   `      <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
   `       <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
-          <div className='w-3/4 h-5/6 border-2 relative'>
+          <div className='w-3/4 h-5/6 mb-14 relative'>
             <div className='absolute top-[-40px] right-1/2 text-slate-800 font-semibold'>{msg}</div>
             <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg}/>
           </div>
         </div>        
-        <MyButton className="place-self-center mb-10" color={"slate"} onClick={handleSubmitDates}>Save</MyButton>
+        <MyButton className="place-self-center mb-5 mt-5" color={"slate"} onClick={handleSubmitDates}>Save</MyButton>
     </div>
     }
     </div>

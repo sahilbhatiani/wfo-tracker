@@ -18,7 +18,7 @@ const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate, currentMo
     return(
         <>
             <div className={clsx(
-                "w-50 stats stats-vertical shadow no-scrollbar border-4 shadow-2xl border-slate-600 ",
+                "w-50 stats stats-vertical no-scrollbar border-2 shadow-2xl border-slate-600 ",
                 {'transition easy-linear ': currentAttendancePercentage >= 50},
                 )}>
                 <div className="stat ">

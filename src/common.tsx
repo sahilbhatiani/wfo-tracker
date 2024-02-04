@@ -34,3 +34,6 @@ export const AppTitle = () => {
         </div>
     )
 }
+
+export const LEAVE_DATES_PATH = 'leaveDates';
+export const DATES_ATTENDED_PATH = 'datesAttended';
