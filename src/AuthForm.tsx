@@ -38,8 +38,8 @@ const AuthForm = () => {
     }
 
     const handlePasswordReset = async () => {
-        if (email.trim() === '' || password.trim() === '') {
-            setMsg('Please fill out all fields.');
+        if (email.trim() === '') {
+            setMsg('Please fill in an email.');
             return;
         }
         sendPasswordResetEmail(auth, email)
@@ -109,7 +109,7 @@ const AuthForm = () => {
                     </div>
                     <div className="flex flex-col">
                         <label>Password</label>
-                        <input type='password' className="border-2" value={password} onChange={(e) => setPassword(e.target.value)} required></input>
+                        <input type='password' className="border-2" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                     </div>
 
                     {/* Buttons */}
