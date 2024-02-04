@@ -1,6 +1,6 @@
 import { useState} from 'react'
 import Calendar from './calendar/Calendar'
-import { AppTitle, MyButton, getConcatMonthYear } from './common';
+import { AppTitle, DATES_ATTENDED_PATH, LEAVE_DATES_PATH, MyButton, getConcatMonthYear } from './common';
 import Stats from './Stats';
 import AuthForm from './AuthForm';
 import auth, { db } from './firebase';
@@ -24,16 +24,15 @@ const handleSignOut = async () => {
         window.location.reload();
     }
     catch(err){
-        console.log(err)
+        console.error(err)
     }
 }
 const handleSubmitDates = async () => {
-  console.log("Submitting leave dates to firebase....")
   try {
-      const ref1 = doc(db, `${user?.uid}/leaveDates`).withConverter(datesConvertor);
-      await setDoc(ref1, leaveDates);
-      const ref2 = doc(db,`${user?.uid}/datesAttended`).withConverter(datesConvertor);
-      await setDoc(ref2, datesAttended);
+      const refLeaveDates = doc(db, `${user?.uid}/${LEAVE_DATES_PATH}`).withConverter(datesConvertor);
+      await setDoc(refLeaveDates, leaveDates);
+      const refDatesAttended = doc(db,`${user?.uid}/${DATES_ATTENDED_PATH}`).withConverter(datesConvertor);
+      await setDoc(refDatesAttended, datesAttended);
       setMsg('Changes saved!')
   }
   catch(e){

@@ -1,4 +1,4 @@
-import { getConcatMonthYear } from "../common";
+import { DATES_ATTENDED_PATH, LEAVE_DATES_PATH, getConcatMonthYear } from "../common";
 import Cell from "./Cell"
 import { doc, getDoc} from "firebase/firestore"; 
 import {format, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay, endOfMonth, addYears, subYears, setDate, isWeekend } from "date-fns";
@@ -69,34 +69,28 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
     }
     
     useEffect(() => {
-        console.log(`User uid ${user?.uid}`)
         const fetchLeaveDates = async () => {
             try {
-                console.log("Trying to fetch data....")
-                const ref = doc(db, `${user?.uid}/leaveDates`).withConverter(datesConvertor);
-                const docSnap = await getDoc(ref);
+                const refLeaveDates = doc(db, `${user?.uid}/${LEAVE_DATES_PATH}`).withConverter(datesConvertor);
+                const docSnap = await getDoc(refLeaveDates);
                 setLeaveDates(docSnap.data() ?? new  Map<string, Array<number>>)
-                console.log(typeof(docSnap.data()));
               } catch (e) {
-                console.error("Error fetching document: ", e);
+                console.error("Error fetching leaveDates: ", e);
             }
         }
 
         const fetchDatesAttended = async () => {
             try {
-                console.log("Trying to fetch dates attended......")
-                const ref = doc(db, `${user?.uid}/datesAttended`).withConverter(datesConvertor);
-                const docSnap = await getDoc(ref);
+                const refDatesAttended = doc(db, `${user?.uid}/${DATES_ATTENDED_PATH}`).withConverter(datesConvertor);
+                const docSnap = await getDoc(refDatesAttended);
                 setDatesAttended(docSnap.data() ?? new  Map<string, Array<number>>)
-                console.log(typeof(docSnap.data()));
               } catch (e) {
-                console.error("Error fetching document: ", e);
+                console.error("Error fetching datesAttended: ", e);
             }
         }
-        
+
         fetchLeaveDates();
         fetchDatesAttended();
-        
     } , [])
 
     return (
