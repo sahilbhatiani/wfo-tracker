@@ -54,7 +54,7 @@ const handleSubmitDates = async () => {
         </div>
   `      <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
   `       <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
-          <div className='w-3/4 h-5/6 mb-14 relative max-w-7xl max-h-[650px] border-2 flex flex-col'>
+          <div className='w-3/4 h-5/6 mb-14 relative max-w-7xl max-h-[650px] flex flex-col'>
             <div className='absolute top-[-40px] right-1/2 text-slate-800 font-semibold'>{msg}</div>
             <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg}/>
             <MyButton className="place-self-center w-[100px] absolute bottom-[-80px] mb-5" color={"slate"} onClick={handleSubmitDates}>Save</MyButton>
