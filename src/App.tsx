@@ -48,12 +48,12 @@ const handleSubmitDates = async () => {
         <div className='flex flex-row place-content-between h-12 px-4 mt-2'>
           <AppTitle/>
           <div className='flex flex-row gap-2 items-center'>
-            <p className='font-bold'>{user.email}</p>
+            <p className='font-bold text-slate-800'>{user.email}</p>
             <MyButton color='slate' onClick={handleSignOut}>Sign Out</MyButton>
           </div>
         </div>
-  `      <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
-  `       <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
+        <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
+         <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
           <div className='w-3/4 h-5/6 mb-14 relative max-w-7xl max-h-[650px] flex flex-col'>
             <div className='absolute top-[-40px] right-1/2 text-slate-800 font-semibold'>{msg}</div>
             <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg}/>

@@ -104,12 +104,12 @@ const AuthForm = () => {
 
                     {/* Inputs */}
                     <div className="flex flex-col">
-                        <label>Email</label>
-                        <input className="border-2" value={email} onChange={(e) => setEmail(e.target.value)} required></input>
+                        <label className="text-slate-800">Email</label>
+                        <input className="border-2 bg-white text-slate-800" value={email} onChange={(e) => setEmail(e.target.value)} required></input>
                     </div>
                     <div className="flex flex-col">
-                        <label>Password</label>
-                        <input type='password' className="border-2" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                        <label className="text-slate-800">Password</label>
+                        <input type='password' className="border-2 bg-white text-slate-800" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                     </div>
 
                     {/* Buttons */}

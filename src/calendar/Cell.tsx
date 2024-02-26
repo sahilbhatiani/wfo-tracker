@@ -16,7 +16,7 @@ const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className
             onContextMenu={isWeekend? undefined: onContextMenu}
             className={clsx(
                 className,
-                "flex items-center justify-center transition-colors h-full text-xl",
+                "flex items-center justify-center transition-colors h-full text-xl text-black",
                 {"bg-slate-200": isWeekend},
                 {"": !isWeekend && !!onClick},
                 )   
