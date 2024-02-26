@@ -18,10 +18,10 @@ const Stats: React.FC<Props> = ({currentMonthAttendance, selectedDate, currentMo
     return(
         <>
             <div className={clsx(
-                "w-50 stats stats-vertical no-scrollbar border-2 shadow-2xl border-slate-600 ",
+                "w-50 stats stats-vertical no-scrollbar border-2 shadow-2xl border-slate-600 bg-white text-black",
                 {'transition easy-linear ': currentAttendancePercentage >= 50},
                 )}>
-                <div className="stat ">
+                <div className="stat">
                     <div className="stat-title text-black">DAYS IN</div>
                     <div className={clsx(
                 "stat-value",

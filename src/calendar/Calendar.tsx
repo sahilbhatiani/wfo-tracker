@@ -105,7 +105,7 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
 
             <div className="w-full h-full grid grid-cols-7 bg-white border-x-2 border-slate-700 border-b-2 shadow-2xl relative">
                 {daysOfWeek.map(day => 
-                        <HeaderCell key={day} className="text-sm font-bold">{day}</HeaderCell>
+                        <HeaderCell key={day} className="text-sm font-bold text-slate-700">{day}</HeaderCell>
                     )}
                 {Array.from(Array(firstDayOfMonth)).map((_, idx) => <Cell key={idx}> </Cell>)}
                 {Array.from({length: numOfDays}, ((_, i) => {
