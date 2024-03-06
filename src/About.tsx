@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { MyButton } from './common';
 
 function About() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [ , setIsModalOpen] = useState(false);
     const modalRef = useRef<HTMLDialogElement>(null);
 
     const openModal = () => {
