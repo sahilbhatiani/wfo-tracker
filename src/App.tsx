@@ -7,6 +7,7 @@ import auth, { db } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { datesConvertor } from './firestoreDB';
+import About from './About';
 
 
 function App() {
@@ -49,6 +50,7 @@ const handleSubmitDates = async () => {
           <AppTitle/>
           <div className='flex flex-row gap-2 items-center'>
             <p className='font-bold text-slate-800'>{user.email}</p>
+            <About></About>
             <MyButton color='slate' onClick={handleSignOut}>Sign Out</MyButton>
           </div>
         </div>

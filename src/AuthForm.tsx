@@ -4,6 +4,7 @@ import auth from "./firebase"
 import { AppTitle, MyButton } from "./common";
 import clsx from "clsx";
 import { FirebaseAuthError, UNKNOWN_ERROR, errorCodes } from "./authErrorCode";
+import About from "./About";
 
 const AuthForm = () => {
     const [isSignInComponent, setIsSignInComponent] = useState(true);
@@ -82,8 +83,9 @@ const AuthForm = () => {
 
     return (
         <div className="flex flex-col h-screen">
-            <div className='flex flex-row h-12 px-4 mt-2'>
+            <div className='flex flex-row h-12 px-4 mt-2 justify-between'>
                 <AppTitle/>
+                <About/>
             </div>
 
             {/* Sign IN/UP Tabs */}
