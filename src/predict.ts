@@ -1,4 +1,4 @@
-import { addDays, differenceInCalendarDays, getDay, isWeekend, startOfDay, subDays } from "date-fns";
+import { addDays, differenceInCalendarDays, endOfMonth, getDay, isWeekend, max, startOfDay, startOfMonth, subDays } from "date-fns";
 import { getConcatMonthYear } from "./common";
 
 export type Prediction = {
@@ -8,7 +8,6 @@ export type Prediction = {
 
 const LOOKBACK_DAYS = 84; // 12 weeks of history
 const HALF_LIFE_DAYS = 28; // recent weeks count more than older ones
-const FORECAST_DAYS = 14;
 const MIN_HISTORY_DAYS = 10; // need at least two working weeks of data
 const LIKELY_THRESHOLD = 0.5;
 
@@ -30,7 +29,8 @@ const getFirstAttendedDate = (datesAttended: Map<string, Array<number>>) => {
 };
 
 /**
- * Predicts which weekdays in the next two weeks the user is likely to go into the office.
+ * Predicts which weekdays of the given month the user is likely to go into the office.
+ * Only days from today onwards are predicted, so past months return nothing.
  * Each weekday (Mon-Fri) gets a recency-weighted attendance rate computed over the last
  * 12 weeks, ignoring weekends, leave days and days before the user started tracking.
  * Returns an empty array if there isn't enough history to make a prediction.
@@ -38,6 +38,7 @@ const getFirstAttendedDate = (datesAttended: Map<string, Array<number>>) => {
 export function predictOfficeDays(
     datesAttended: Map<string, Array<number>>,
     leaveDates: Map<string, Array<number>>,
+    month: Date,
     today: Date = new Date(),
 ): Prediction[] {
     today = startOfDay(today);
@@ -61,8 +62,8 @@ export function predictOfficeDays(
     if (historyDays < MIN_HISTORY_DAYS) return [];
 
     const predictions: Prediction[] = [];
-    for (let i = 0; i < FORECAST_DAYS; i++) {
-        const date = addDays(today, i);
+    const lastDay = endOfMonth(month);
+    for (let date = max([today, startOfMonth(month)]); date <= lastDay; date = addDays(date, 1)) {
         if (isWeekend(date) || isMarked(leaveDates, date) || isMarked(datesAttended, date)) continue;
         const weekday = getDay(date);
         if (!totalWeight[weekday]) continue;
