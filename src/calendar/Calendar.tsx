@@ -7,6 +7,7 @@ import { User } from "firebase/auth";
 import { useEffect } from "react";
 import { datesConvertor } from "../firestoreDB";
 import HeaderCell from "./HeaderCell";
+import { Prediction, findPrediction } from "../predict";
 
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -19,9 +20,10 @@ type Props = {
     leaveDates: Map<string, Array<number>>,
     setLeaveDates: (leaveDates: Map<string, Array<number>>) => void
     setMsg: (msg: string) => void;
+    predictions: Prediction[];
 }
 
-const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates, setMsg}) => {
+const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelectedDate, datesAttended, setDatesAttended, leaveDates, setLeaveDates, setMsg, predictions}) => {
     const nextMonth = () => setSelectedDate(addMonths(selectedDate, 1));
     const prevMonth = () => setSelectedDate(subMonths(selectedDate, 1));
     const nextYear = () => setSelectedDate(addYears(selectedDate, 1));
@@ -117,6 +119,7 @@ const Calendar: React.FC<Props> = ({user, selectedDate = new Date(), setSelected
                         isDateAttended={isDateAttended}
                         isWeekend = {isWeekend(setDate(selectedDate, dayOfMonth))}
                         isLeaveDate = {isLeaveDate}
+                        isPredicted = {!!findPrediction(predictions, setDate(selectedDate, dayOfMonth))}
                         onClick={(event) => handleClickDate(dayOfMonth, false, event)} 
                         key={i}
                         onContextMenu={(event) => handleClickDate(dayOfMonth, true, event)}

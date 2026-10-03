@@ -1,4 +1,4 @@
-import { useState} from 'react'
+import { useMemo, useState} from 'react'
 import Calendar from './calendar/Calendar'
 import { AppTitle, DATES_ATTENDED_PATH, LEAVE_DATES_PATH, MyButton, getConcatMonthYear } from './common';
 import Stats from './Stats';
@@ -8,6 +8,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { datesConvertor } from './firestoreDB';
 import About from './About';
+import Predictions from './Predictions';
+import { predictOfficeDays } from './predict';
 
 
 function App() {
@@ -17,6 +19,7 @@ function App() {
   const disableDefaultRightClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event.preventDefault();
   const [user] = useAuthState(auth)
   const [msg, setMsg] = useState('')
+  const forecast = useMemo(() => predictOfficeDays(datesAttended, leaveDates, selectedDate), [datesAttended, leaveDates, selectedDate]);
 
   
 const handleSignOut = async () => {
@@ -55,10 +58,13 @@ const handleSubmitDates = async () => {
           </div>
         </div>
         <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
-         <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
+          <div className='flex flex-col gap-6'>
+            <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
+            <Predictions forecast={forecast} selectedDate={selectedDate}/>
+          </div>
           <div className='w-3/4 h-5/6 mb-14 relative max-w-7xl max-h-[650px] flex flex-col'>
             <div className='absolute top-[-40px] right-1/2 text-slate-800 font-semibold'>{msg}</div>
-            <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg}/>
+            <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg} predictions={forecast.predictions}/>
             <MyButton className="place-self-center w-[100px] absolute bottom-[-80px] mb-5" color={"slate"} onClick={handleSubmitDates}>Save</MyButton>
           </div>
         </div>        
