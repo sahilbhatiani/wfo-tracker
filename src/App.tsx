@@ -19,7 +19,7 @@ function App() {
   const disableDefaultRightClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event.preventDefault();
   const [user] = useAuthState(auth)
   const [msg, setMsg] = useState('')
-  const predictions = useMemo(() => predictOfficeDays(datesAttended, leaveDates, selectedDate), [datesAttended, leaveDates, selectedDate]);
+  const forecast = useMemo(() => predictOfficeDays(datesAttended, leaveDates, selectedDate), [datesAttended, leaveDates, selectedDate]);
 
   
 const handleSignOut = async () => {
@@ -60,11 +60,11 @@ const handleSubmitDates = async () => {
         <div className="h-full flex flex-row items-center justify-self-center justify-center gap-10">
           <div className='flex flex-col gap-6'>
             <Stats currentMonthAttendance={datesAttended.get(getConcatMonthYear(selectedDate))} selectedDate={selectedDate} currentMonthLeaves={leaveDates.get(getConcatMonthYear(selectedDate))}/>
-            <Predictions predictions={predictions} selectedDate={selectedDate}/>
+            <Predictions forecast={forecast} selectedDate={selectedDate}/>
           </div>
           <div className='w-3/4 h-5/6 mb-14 relative max-w-7xl max-h-[650px] flex flex-col'>
             <div className='absolute top-[-40px] right-1/2 text-slate-800 font-semibold'>{msg}</div>
-            <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg} predictions={predictions}/>
+            <Calendar user={user} selectedDate={selectedDate} setSelectedDate={setSelectedDate} datesAttended={datesAttended} setDatesAttended={setDatesAttended} leaveDates={leaveDates} setLeaveDates={setLeaveDates} setMsg={setMsg} predictions={forecast.predictions}/>
             <MyButton className="place-self-center w-[100px] absolute bottom-[-80px] mb-5" color={"slate"} onClick={handleSubmitDates}>Save</MyButton>
           </div>
         </div>        
