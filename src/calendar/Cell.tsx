@@ -6,10 +6,11 @@ interface Props extends React.PropsWithChildren {
     isWeekend?: boolean;
     isDateAttended?: boolean;
     isLeaveDate?: boolean;
+    isPredicted?: boolean;
     onContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
-const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className, children, onClick=undefined, onContextMenu=undefined, isLeaveDate}) => {
+const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className, children, onClick=undefined, onContextMenu=undefined, isLeaveDate, isPredicted=false}) => {
     return(
         <div 
             onClick={isWeekend ? undefined : onClick} 
@@ -25,7 +26,8 @@ const Cell: React.FC<Props> = ({isDateAttended=false, isWeekend=false, className
                 'h-12 aspect-square flex items-center justify-center rounded-full cursor-pointer',
                 {"shadow-sm shadow-emerald-800 bg-emerald-400 font-medium text-white border-2  border-emerald-700 hover:bg-emerald-300": isDateAttended},
                 {"shadow-sm shadow-slate-700 bg-slate-300 border-slate-600 border-2 hover:bg-slate-200": isLeaveDate},
-                {"hover:bg-slate-100": !isLeaveDate && !isDateAttended}
+                {"hover:bg-slate-100": !isLeaveDate && !isDateAttended},
+                {"border-2 border-dashed border-emerald-500 bg-emerald-50": isPredicted && !isLeaveDate && !isDateAttended}
                 )}>
                 {children}
             </div> : children}
